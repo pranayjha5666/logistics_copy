@@ -4,7 +4,8 @@ import '../../../../base/common_button.dart';
 
 class ChangeLocationDailogue extends StatelessWidget {
   final bool? isrecent;
-  const ChangeLocationDailogue({super.key, this.isrecent});
+  final bool? ispickup;
+  const ChangeLocationDailogue({super.key, this.isrecent, this.ispickup});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +38,7 @@ class ChangeLocationDailogue extends StatelessWidget {
             ),
           ),
           Text(
-            "You have already entered a drop address. Do you want to change it to selected ${isrecent != null ? "recent" : "saved"} address?",
+            "You have already entered an address. Do you want to change it to the selected ${isrecent != null ? "recent" : "saved"} address?",
             textAlign: TextAlign.center,
             style: GoogleFonts.roboto(
               fontSize: 14.0,
