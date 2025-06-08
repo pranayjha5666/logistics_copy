@@ -7,6 +7,7 @@ import 'package:logistics/views/screens/DashBoard/Location_Selection/Drop_detail
 import 'package:logistics/views/screens/DashBoard/Location_Selection/Pickup_details_components/recent_address_model_and_list.dart';
 import '../../../../controllers/location_controller.dart';
 import '../../../../controllers/two_wheeler_controller.dart';
+import 'Components/change_location_dailogue.dart';
 import 'Drop_details_components/drop_address.dart';
 import '../../../base/common_button.dart';
 import 'Drop_details_components/recent_address_section.dart';
@@ -83,32 +84,14 @@ class DropDetails extends StatefulWidget {
 
 class _DropDetailsState extends State<DropDetails> {
   final formkey = GlobalKey<FormState>();
-  List<LocationFormControllers> localdropLocations = [];
+  final controller = Get.find<LocationController>();
 
   @override
   void initState() {
     super.initState();
-    final controller = Get.find<LocationController>();
-
-    localdropLocations = controller.dropLocations.isNotEmpty
+    controller.localdropLocations = controller.dropLocations.isNotEmpty
         ? List.from(controller.dropLocations)
         : [LocationFormControllers(type: "drop")];
-  }
-
-  void addDropLocation() {
-    if (localdropLocations.length < 4) {
-      setState(() {
-        localdropLocations.add(LocationFormControllers(type: "drop"));
-      });
-    }
-  }
-
-  void removeDropLocation(int index) {
-    if (localdropLocations.length > 1) {
-      setState(() {
-        localdropLocations.removeAt(index);
-      });
-    }
   }
 
   List<Map<String, dynamic>> converthomelistmap(
@@ -124,10 +107,8 @@ class _DropDetailsState extends State<DropDetails> {
 
   void submitDropLocations() {
     if (formkey.currentState!.validate()) {
-      final controller = Get.find<LocationController>();
-      controller.dropLocations
-        ..clear()
-        ..addAll(localdropLocations);
+      controller.dropLocations.clear();
+      controller.dropLocations.addAll(controller.localdropLocations);
       controller.updatedropAddressList();
 
       if (widget.istwowheeler != null) {
@@ -169,23 +150,23 @@ class _DropDetailsState extends State<DropDetails> {
               Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 17),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Form(
-          key: formkey,
-          child: Column(
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: localdropLocations.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == localdropLocations.length) {
-                    return localdropLocations.length <
-                            (widget.maxlocaladdress ?? 4)
-                        ? Column(
-                            children: [
-                              GestureDetector(
-                                onTap: addDropLocation,
+      body: GetBuilder<LocationController>(
+        builder: (controller) {
+          return SingleChildScrollView(
+            child: Form(
+              key: formkey,
+              child: Column(
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: controller.localdropLocations.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == controller.localdropLocations.length) {
+                        return controller.localdropLocations.length <
+                                (widget.maxlocaladdress ?? 4)
+                            ? GestureDetector(
+                                onTap: controller.addDropLocation,
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                       left: 16.0, right: 16.0),
@@ -206,103 +187,90 @@ class _DropDetailsState extends State<DropDetails> {
                                     ]),
                                   ),
                                 ),
-                              ),
-                              SizedBox(
+                              )
+                            : SizedBox.shrink();
+                      } else {
+                        final location = controller.localdropLocations[index];
+                        return Column(
+                          children: [
+                            if (index != 0)
+                              Container(
                                 height: 10,
+                                color: Color(0xffF1F1F1),
                               ),
-                              InkWell(
-                                onTap: () async {
-                                  final selectedAddress = await Navigator.push(
-                                    context,
-                                    getCustomRoute(child: SavedAddressPage()),
-                                  );
-
-                                  if (selectedAddress != null &&
-                                      selectedAddress is SavedAddress) {
-                                    final location = localdropLocations.last;
-                                    location.mapaddress.text =
-                                        selectedAddress.mapAddress;
-                                    location.addressLineOne.text =
-                                        selectedAddress.addressLineOne;
-                                    location.addressLineTwo.text =
-                                        selectedAddress.addressLineTwo;
-                                    location.pincode.text =
-                                        selectedAddress.pincode;
-                                    location.city.text = selectedAddress.city;
-                                    location.name.text = selectedAddress.name;
-                                    location.phone.text = selectedAddress.phone;
-                                    location.latitude =
-                                        selectedAddress.latitude;
-                                    location.longitude =
-                                        selectedAddress.longitude;
-                                    location.stateName =
-                                        selectedAddress.stateName;
-                                    location.stateId = selectedAddress.stateId;
-
-                                    setState(() {});
-                                  }
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 16.0, right: 16.0),
-                                  child: Container(
-                                    padding: EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                        color: Color(0xffEBF2F3),
-                                        borderRadius: BorderRadius.circular(4)),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.favorite,
-                                        ),
-                                        SizedBox(width: 5),
-                                        Expanded(
-                                            child: Text(
-                                          "Saved Addresss",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelMedium,
-                                        )),
-                                        Icon(
-                                          Icons.arrow_forward_ios,
-                                          size: 20,
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 16.0,
+                                  right: 16.0,
+                                  bottom: 16.0,
+                                  top: 8.0),
+                              child: DropAddress(
+                                index: index,
+                                location: location,
+                                onRemove: () =>
+                                    controller.removeDropLocation(index),
+                                canRemove:
+                                    controller.localdropLocations.length > 1,
                               ),
-                              RecentAddressSection(recentaddress: recentaddress,locallocation: localdropLocations,),
-                            ],
-                          )
-                        : SizedBox.shrink();
-                  } else {
-                    final location = localdropLocations[index];
-                    return Column(
-                      children: [
-                        if (index != 0)
-                          Container(
-                            height: 10,
-                            color: Color(0xffF1F1F1),
-                          ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 16.0, right: 16.0, bottom: 16.0, top: 8.0),
-                          child: DropAddress(
-                            index: index,
-                            location: location,
-                            onRemove: () => removeDropLocation(index),
-                            canRemove: localdropLocations.length > 1,
-                          ),
+                            ),
+                          ],
+                        );
+                      }
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  InkWell(
+                    onTap: () async {
+                      final selectedAddress = await Navigator.push(
+                        context,
+                        getCustomRoute(child: SavedAddressPage()),
+                      );
+                      if (selectedAddress != null &&
+                          selectedAddress is SavedAddress) {
+                        final location = controller.localdropLocations.last;
+                        if (location.mapaddress.text.isNotEmpty) {
+                          bool res = await showConfirmationDialog(context);
+                          if (res) {
+                            _updateAddress(location, selectedAddress);
+                          }
+                        } else {
+                          _updateAddress(location, selectedAddress);
+                        }
+
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                            color: Color(0xffEBF2F3),
+                            borderRadius: BorderRadius.circular(4)),
+                        child: Row(
+                          children: [
+                            Icon(Icons.favorite),
+                            SizedBox(width: 5),
+                            Expanded(
+                                child: Text(
+                              "Saved Addresss",
+                              style: Theme.of(context).textTheme.labelMedium,
+                            )),
+                            Icon(Icons.arrow_forward_ios, size: 20),
+                          ],
                         ),
-                      ],
-                    );
-                  }
-                },
+                      ),
+                    ),
+                  ),
+                  RecentAddressSection(
+                    recentaddress: recentaddress,
+                    locallocation: controller.localdropLocations,
+                    onAddressSelected: controller.updateDropLocation,
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
@@ -318,4 +286,30 @@ class _DropDetailsState extends State<DropDetails> {
       ),
     );
   }
+}
+
+
+Future<bool> showConfirmationDialog(BuildContext context) async {
+  return await showDialog<bool>(
+    context: context,
+    builder: (context) {
+      return ChangeLocationDailogue();
+    },
+  ) ??
+      false;
+}
+
+// Function to update the address in the location
+void _updateAddress(LocationFormControllers location, SavedAddress address) {
+  location.mapaddress.text = address.mapAddress;
+  location.addressLineOne.text = address.addressLineOne;
+  location.addressLineTwo.text = address.addressLineTwo;
+  location.pincode.text = address.pincode;
+  location.city.text = address.city;
+  location.name.text = address.name;
+  location.phone.text = address.phone;
+  location.latitude = address.latitude;
+  location.longitude = address.longitude;
+  location.stateName = address.stateName;
+  location.stateId = address.stateId;
 }

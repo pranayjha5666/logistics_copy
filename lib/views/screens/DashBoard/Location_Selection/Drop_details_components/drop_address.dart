@@ -29,288 +29,298 @@ class DropAddress extends StatefulWidget {
 class _DropAddressState extends State<DropAddress> {
   @override
   Widget build(BuildContext context) {
-    final bool isMapSelected = widget.location.mapaddress.text.isNotEmpty;
+    return GetBuilder<LocationController>(
+      builder: (controller) {
 
-    return Column(
-      children: [
-        Row(
+        return Column(
           children: [
-            Text('Drop Location ${widget.index + 1}',
-                style: Theme.of(context)
-                    .textTheme
-                    .labelMedium
-                    ?.copyWith(fontWeight: FontWeight.w700)),
-            const Spacer(),
-            if (widget.canRemove)
-              GestureDetector(
-                onTap: widget.onRemove,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                      color: const Color(0xffCF0012),
-                      borderRadius: BorderRadius.circular(4)),
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete_outline, size: 16, color: Colors.white),
-                      SizedBox(width: 4),
-                      Text("Delete",
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelSmall
-                              ?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600)),
-                    ],
-                  ),
-                ),
-              )
-          ],
-        ),
-        const SizedBox(height: 15),
-        TextFormField(
-          style: Theme.of(context)
-              .textTheme
-              .labelLarge
-              ?.copyWith(overflow: TextOverflow.ellipsis),
-          maxLines: 2,
-          minLines: 1,
-          onTap: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => MapPage()),
-            );
-            if (result != null) {
-              widget.location.mapaddress.text = result['address'];
-              widget.location.latitude = result['lat'].toString();
-              widget.location.longitude = result['lng'].toString();
-              widget.location.stateName = result['state'].toString();
-
-              final matchedState =
-                  Get.find<AuthController>().stateList.firstWhereOrNull(
-                        (state) => state['name'] == widget.location.stateName,
-                      );
-
-              if (matchedState != null) {
-                widget.location.stateId = matchedState['id'];
-              }
-
-              widget.location.city.text = result['city'].toString();
-              widget.location.pincode.text = result['pincode'].toString();
-              setState(() {});
-            }
-          },
-          readOnly: true,
-          validator: (value) => value!.isEmpty ? "Select Map Location" : null,
-          controller: widget.location.mapaddress,
-          decoration: CustomDecoration.inputDecoration(
-            borderRadius: 8,
-            label: 'Select Map Location',
-            labelStyle: Theme.of(context)
-                .textTheme
-                .labelMedium
-                ?.copyWith(color: Colors.grey[500]),
-            suffix: Icon(Icons.location_on_outlined),
-          ),
-        ),
-        if (isMapSelected) ...[
-          const SizedBox(height: 15),
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  style: Theme.of(context).textTheme.labelLarge,
-                  validator: (value) =>
-                      value!.isEmpty ? "Enter Receiver Name" : null,
-                  controller: widget.location.name,
-                  decoration: CustomDecoration.inputDecoration(
-                    borderRadius: 8,
-                    label: "Receiver Name",
-                    labelStyle: Theme.of(context)
+            Row(
+              children: [
+                Text('Drop Location ${widget.index + 1}',
+                    style: Theme.of(context)
                         .textTheme
                         .labelMedium
-                        ?.copyWith(color: Colors.grey[500]),
-                  ),
-                  keyboardType: TextInputType.text,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: TextFormField(
-                  style: Theme.of(context).textTheme.labelLarge,
-                  validator: (value) => value!.isEmpty || value.length != 10
-                      ? "Enter Receiver Mobile No"
-                      : null,
-                  controller: widget.location.phone,
-                  keyboardType: TextInputType.number,
-                  decoration: CustomDecoration.inputDecoration(
-                    borderRadius: 8,
-                    label: 'Receiver Phone',
-                    labelStyle: Theme.of(context)
-                        .textTheme
-                        .labelMedium
-                        ?.copyWith(color: Colors.grey[500]),
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(10)
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 15),
-          TextFormField(
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge
-                ?.copyWith(overflow: TextOverflow.ellipsis),
-            maxLines: null,
-            minLines: 1,
-            validator: (value) =>
-                value!.isEmpty ? "Enter Address Line 1" : null,
-            controller: widget.location.addressLineOne,
-            decoration: CustomDecoration.inputDecoration(
-              borderRadius: 8,
-              label: 'Address Line 1',
-              labelStyle: Theme.of(context)
-                  .textTheme
-                  .labelMedium
-                  ?.copyWith(color: Colors.grey[500]),
-            ),
-          ),
-          const SizedBox(height: 15),
-          TextFormField(
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge
-                ?.copyWith(overflow: TextOverflow.ellipsis),
-            maxLines: null,
-            minLines: 1,
-            controller: widget.location.addressLineTwo,
-            decoration: CustomDecoration.inputDecoration(
-              borderRadius: 8,
-              label: 'Address Line 2 (Optional)',
-              labelStyle: Theme.of(context)
-                  .textTheme
-                  .labelMedium
-                  ?.copyWith(color: Colors.grey[500]),
-            ),
-          ),
-          const SizedBox(height: 15),
-          // State selector and other fields
-          FormField(
-            validator: (value) {
-              if (widget.location.stateName == null ||
-                  widget.location.stateName!.isEmpty) {
-                return 'Select State';
-              }
-              return null;
-            },
-            builder: (FormFieldState field) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                        ?.copyWith(fontWeight: FontWeight.w700)),
+                const Spacer(),
+                if (widget.canRemove)
                   GestureDetector(
-                    onTap: () {
-                      List<dynamic> allStates =
-                          Get.find<AuthController>().stateList;
-                      FocusScope.of(context).unfocus();
-                      showDialog(
-                        context: context,
-                        builder: (_) => SelectStateDialogue(
-                          allStates: allStates,
-                          onStateSelected: (selectedState) {
-                            widget.location.stateName = selectedState['name'];
-                            widget.location.stateId = selectedState['id'];
-                            field.didChange(selectedState['name']);
-                          },
-                        ),
-                      );
-                    },
+                    onTap: widget.onRemove,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 16),
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        border: Border.all(
-                            color: field.hasError ? Colors.red : Colors.grey),
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.white,
-                      ),
+                          color: const Color(0xffCF0012),
+                          borderRadius: BorderRadius.circular(4)),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(widget.location.stateName ?? "Select State",
+                          Icon(Icons.delete_outline,
+                              size: 16, color: Colors.white),
+                          SizedBox(width: 4),
+                          Text("Delete",
                               style: Theme.of(context)
                                   .textTheme
-                                  .labelLarge
+                                  .labelSmall
                                   ?.copyWith(
-                                      color: widget.location.stateName != null
-                                          ? Colors.black
-                                          : Colors.grey[500])),
-                          const Icon(Icons.arrow_drop_down),
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600)),
                         ],
                       ),
                     ),
-                  ),
-                  if (field.hasError)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6.0, left: 12),
-                      child: Text(
-                        field.errorText ?? '',
-                        style: Theme.of(context)
+                  )
+              ],
+            ),
+            const SizedBox(height: 15),
+            TextFormField(
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge
+                  ?.copyWith(overflow: TextOverflow.ellipsis),
+              maxLines: 2,
+              minLines: 1,
+              onTap: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => MapPage()),
+                );
+                if (result != null) {
+                  widget.location.mapaddress.text = result['address'];
+                  widget.location.latitude = result['lat'].toString();
+                  widget.location.longitude = result['lng'].toString();
+                  widget.location.stateName = result['state'].toString();
+
+                  final matchedState =
+                      Get.find<AuthController>().stateList.firstWhereOrNull(
+                            (state) =>
+                                state['name'] == widget.location.stateName,
+                          );
+
+                  if (matchedState != null) {
+                    widget.location.stateId = matchedState['id'];
+                  }
+
+                  widget.location.city.text = result['city'].toString();
+                  widget.location.pincode.text = result['pincode'].toString();
+                  setState(() {});
+                }
+              },
+              readOnly: true,
+              validator: (value) =>
+                  value!.isEmpty ? "Select Map Location" : null,
+              controller: widget.location.mapaddress,
+              decoration: CustomDecoration.inputDecoration(
+                borderRadius: 8,
+                label: 'Select Map Location',
+                labelStyle: Theme.of(context)
+                    .textTheme
+                    .labelMedium
+                    ?.copyWith(color: Colors.grey[500]),
+                suffix: Icon(Icons.location_on_outlined),
+              ),
+            ),
+            if (widget.location.mapaddress.text.isNotEmpty) ...[
+              const SizedBox(height: 15),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      style: Theme.of(context).textTheme.labelLarge,
+                      validator: (value) =>
+                          value!.isEmpty ? "Enter Receiver Name" : null,
+                      controller: widget.location.name,
+                      decoration: CustomDecoration.inputDecoration(
+                        borderRadius: 8,
+                        label: "Receiver Name",
+                        labelStyle: Theme.of(context)
                             .textTheme
-                            .labelSmall
-                            ?.copyWith(color: Colors.red),
+                            .labelMedium
+                            ?.copyWith(color: Colors.grey[500]),
                       ),
+                      keyboardType: TextInputType.text,
                     ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextFormField(
+                      style: Theme.of(context).textTheme.labelLarge,
+                      validator: (value) => value!.isEmpty || value.length != 10
+                          ? "Enter Receiver Mobile No"
+                          : null,
+                      controller: widget.location.phone,
+                      keyboardType: TextInputType.number,
+                      decoration: CustomDecoration.inputDecoration(
+                        borderRadius: 8,
+                        label: 'Receiver Phone',
+                        labelStyle: Theme.of(context)
+                            .textTheme
+                            .labelMedium
+                            ?.copyWith(color: Colors.grey[500]),
+                      ),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(10)
+                      ],
+                    ),
+                  ),
                 ],
-              );
-            },
-          ),
-          const SizedBox(height: 15),
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  style: Theme.of(context).textTheme.labelLarge,
-                  validator: (value) =>
-                      value!.isEmpty ? "Enter City Name" : null,
-                  controller: widget.location.city,
-                  decoration: CustomDecoration.inputDecoration(
-                      borderRadius: 8,
-                      label: "City Name",
-                      labelStyle: Theme.of(context)
-                          .textTheme
-                          .labelMedium
-                          ?.copyWith(color: Colors.grey[500])),
-                  keyboardType: TextInputType.text,
+              ),
+              const SizedBox(height: 15),
+              TextFormField(
+                style: Theme.of(context)
+                    .textTheme
+                    .labelLarge
+                    ?.copyWith(overflow: TextOverflow.ellipsis),
+                maxLines: null,
+                minLines: 1,
+                validator: (value) =>
+                    value!.isEmpty ? "Enter Address Line 1" : null,
+                controller: widget.location.addressLineOne,
+                decoration: CustomDecoration.inputDecoration(
+                  borderRadius: 8,
+                  label: 'Address Line 1',
+                  labelStyle: Theme.of(context)
+                      .textTheme
+                      .labelMedium
+                      ?.copyWith(color: Colors.grey[500]),
                 ),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: TextFormField(
-                  style: Theme.of(context).textTheme.labelLarge,
-                  validator: (value) => value!.isEmpty ? "Enter Pincode" : null,
-                  controller: widget.location.pincode,
-                  keyboardType: TextInputType.number,
-                  decoration: CustomDecoration.inputDecoration(
-                      borderRadius: 8,
-                      label: 'Pincode No',
-                      labelStyle: Theme.of(context)
-                          .textTheme
-                          .labelMedium
-                          ?.copyWith(color: Colors.grey[500])),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(6)
-                  ],
+              const SizedBox(height: 15),
+              TextFormField(
+                style: Theme.of(context)
+                    .textTheme
+                    .labelLarge
+                    ?.copyWith(overflow: TextOverflow.ellipsis),
+                maxLines: null,
+                minLines: 1,
+                controller: widget.location.addressLineTwo,
+                decoration: CustomDecoration.inputDecoration(
+                  borderRadius: 8,
+                  label: 'Address Line 2 (Optional)',
+                  labelStyle: Theme.of(context)
+                      .textTheme
+                      .labelMedium
+                      ?.copyWith(color: Colors.grey[500]),
                 ),
+              ),
+              const SizedBox(height: 15),
+              // State selector and other fields
+              FormField(
+                validator: (value) {
+                  if (widget.location.stateName == null ||
+                      widget.location.stateName!.isEmpty) {
+                    return 'Select State';
+                  }
+                  return null;
+                },
+                builder: (FormFieldState field) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          List<dynamic> allStates =
+                              Get.find<AuthController>().stateList;
+                          FocusScope.of(context).unfocus();
+                          showDialog(
+                            context: context,
+                            builder: (_) => SelectStateDialogue(
+                              allStates: allStates,
+                              onStateSelected: (selectedState) {
+                                widget.location.stateName =
+                                    selectedState['name'];
+                                widget.location.stateId = selectedState['id'];
+                                field.didChange(selectedState['name']);
+                              },
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 16),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color:
+                                    field.hasError ? Colors.red : Colors.grey),
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.white,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(widget.location.stateName ?? "Select State",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge
+                                      ?.copyWith(
+                                          color:
+                                              widget.location.stateName != null
+                                                  ? Colors.black
+                                                  : Colors.grey[500])),
+                              const Icon(Icons.arrow_drop_down),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (field.hasError)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6.0, left: 12),
+                          child: Text(
+                            field.errorText ?? '',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(color: Colors.red),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(height: 15),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      style: Theme.of(context).textTheme.labelLarge,
+                      validator: (value) =>
+                          value!.isEmpty ? "Enter City Name" : null,
+                      controller: widget.location.city,
+                      decoration: CustomDecoration.inputDecoration(
+                          borderRadius: 8,
+                          label: "City Name",
+                          labelStyle: Theme.of(context)
+                              .textTheme
+                              .labelMedium
+                              ?.copyWith(color: Colors.grey[500])),
+                      keyboardType: TextInputType.text,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextFormField(
+                      style: Theme.of(context).textTheme.labelLarge,
+                      validator: (value) =>
+                          value!.isEmpty ? "Enter Pincode" : null,
+                      controller: widget.location.pincode,
+                      keyboardType: TextInputType.number,
+                      decoration: CustomDecoration.inputDecoration(
+                          borderRadius: 8,
+                          label: 'Pincode No',
+                          labelStyle: Theme.of(context)
+                              .textTheme
+                              .labelMedium
+                              ?.copyWith(color: Colors.grey[500])),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(6)
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
-          ),
-        ],
-      ],
+          ],
+        );
+      },
     );
   }
 }

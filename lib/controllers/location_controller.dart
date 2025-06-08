@@ -22,8 +22,6 @@ class LocationController extends GetxController implements GetxService {
   int maxPickup = 4;
   int maxDrop = 4;
 
-
-
   final List<LocationFormControllers> _pickupLocations = [];
   final List<LocationFormControllers> _dropLocations = [];
 
@@ -49,11 +47,10 @@ class LocationController extends GetxController implements GetxService {
     super.onInit();
   }
 
-
-
   void updatepickupAddressList() {
     pickaddressList =
         _pickupLocations.map((address) => address.toModel()).toList();
+
     update();
   }
 
@@ -73,10 +70,25 @@ class LocationController extends GetxController implements GetxService {
     super.onClose();
   }
 
-
-  // Local Drop Location
   List<LocationFormControllers> localdropLocations = [];
+  void addDropLocation() {
+    if (localdropLocations.length < 4) {
+      localdropLocations.add(LocationFormControllers(type: "drop"));
+    }
+    update();
+  }
 
+  void removeDropLocation(int index) {
+    if (localdropLocations.length > 1) {
+      localdropLocations.removeAt(index);
+    }
+    update();
+  }
+
+  void updateDropLocation(int index) {
+    localdropLocations[index] = localdropLocations[index];
+    update();
+  }
 
   //Map part
 
@@ -224,11 +236,9 @@ class LocationController extends GetxController implements GetxService {
         };
         responseModel = ResponseModel(true, "SUCCESS", returndata);
       } else {
-
         responseModel = ResponseModel(false, response.toString(), "UNSUCCESS");
       }
     } catch (e) {
-
       responseModel = ResponseModel(false, "UNSUCCESS");
       log('++++++++++++++++++++++++++++++++++++++++++++ ${e.toString()} +++++++++++++++++++++++++++++++++++++++++++++',
           name: "ERROR AT fetchPlaceDetailsById()");
