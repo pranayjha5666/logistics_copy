@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:logistics/views/screens/DashBoard/Location_Selection/Pickup_details_components/recent_address_model_and_list.dart';
 import '../../../../../controllers/location_controller.dart';
@@ -52,19 +54,16 @@ class _RecentAddressSectionState extends State<RecentAddressSection> {
               return InkWell(
                 onTap: () async {
                   final location = widget.locallocation.last;
-
-                  // Check if the mapaddress text is not empty
+                  log(widget.locallocation.length.toString());
                   if (location.mapaddress.text.isNotEmpty) {
-                    // Show confirmation dialog and await the result
                     bool res = await showConfirmationDialog(context);
                     if (res) {
                       _updateAddress(location, address);
-                      widget.onAddressSelected(index);
                     }
                   } else {
                     _updateAddress(location, address);
-                    widget.onAddressSelected(index);
                   }
+                  widget.onAddressSelected(widget.locallocation.length - 1);
                 },
                 child: Container(
                   child: Row(

@@ -31,7 +31,6 @@ class _DropAddressState extends State<DropAddress> {
   Widget build(BuildContext context) {
     return GetBuilder<LocationController>(
       builder: (controller) {
-
         return Column(
           children: [
             Row(
