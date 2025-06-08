@@ -131,8 +131,8 @@ class LocationController extends GetxController implements GetxService {
     log("getCurrentLocation Called");
 
     try {
-      // _isLoading = true;
-      // update();
+      _isLoading = true;
+      update();
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       // if (!serviceEnabled) return;
 

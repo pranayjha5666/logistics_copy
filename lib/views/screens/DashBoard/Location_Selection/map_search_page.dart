@@ -37,94 +37,102 @@ class MapSearchPage extends StatelessWidget {
               surfaceTintColor: Colors.white,
               foregroundColor: Colors.black,
             ),
-            body: SafeArea(
-              child: controller.isLoading
-                  ? MapSearchShimmer()
-                  : controller.listOfLocation.isEmpty
-                      ? Center(child: Text("No locations found"))
-                      : ListView.builder(
-                          itemCount: controller.listOfLocation.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: EdgeInsets.only(left: 5, right: 5),
-                              child: ListTile(
-                                title: Row(
-                                  children: [
-                                    ClipOval(
-                                      child: Container(
-                                        color:
-                                            Colors.grey[200]?.withOpacity(0.7),
-                                        padding: EdgeInsets.all(5),
-                                        child: Icon(
-                                          Icons.location_on,
-                                          color: Colors.grey[600],
-                                          size: 20,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(width: 20),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+            body: controller.isLoading
+                ? Center(child: CircularProgressIndicator())
+                : SafeArea(
+                    child: controller.isLoading
+                        ? MapSearchShimmer()
+                        : controller.listOfLocation.isEmpty
+                            ? Center(child: Text("No locations found"))
+                            : ListView.builder(
+                                itemCount: controller.listOfLocation.length,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: EdgeInsets.only(left: 5, right: 5),
+                                    child: ListTile(
+                                      title: Row(
                                         children: [
-                                          Text(
-                                            controller.listOfLocation[index]
-                                                    ['structured_formatting']
-                                                ["main_text"],
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                              fontFamily: "Poppins",
+                                          ClipOval(
+                                            child: Container(
+                                              color: Colors.grey[200]
+                                                  ?.withOpacity(0.7),
+                                              padding: EdgeInsets.all(5),
+                                              child: Icon(
+                                                Icons.location_on,
+                                                color: Colors.grey[600],
+                                                size: 20,
+                                              ),
                                             ),
                                           ),
-                                          Text(
-                                            controller.listOfLocation[index]
-                                                    ['description'] ??
-                                                '',
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w500,
-                                              fontFamily: "Poppins",
-                                              color: Colors.grey[500],
+                                          SizedBox(width: 20),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  controller.listOfLocation[
+                                                              index][
+                                                          'structured_formatting']
+                                                      ["main_text"],
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontFamily: "Poppins",
+                                                  ),
+                                                ),
+                                                Text(
+                                                  controller.listOfLocation[
+                                                              index]
+                                                          ['description'] ??
+                                                      '',
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontFamily: "Poppins",
+                                                    color: Colors.grey[500],
+                                                  ),
+                                                ),
+                                                Divider(
+                                                    height: 7,
+                                                    color: Colors.grey[400]),
+                                              ],
                                             ),
                                           ),
-                                          Divider(
-                                              height: 7,
-                                              color: Colors.grey[400]),
                                         ],
                                       ),
+                                      onTap: () async {
+                                        await controller
+                                            .fetchPlaceDetailsById(
+                                                controller.listOfLocation[index]
+                                                    ['place_id'])
+                                            .then((value) {
+                                          if (value.isSuccess &&
+                                              value.data != null) {
+                                            final details = {
+                                              'lat': value.data['lat'],
+                                              'lng': value.data['lng'],
+                                              'address': value.data['address'],
+                                            };
+                                            log(details.toString(),
+                                                name: "Details");
+                                            if (context.mounted) {
+                                              Navigator.pop(context, details);
+                                            }
+                                          } else {
+                                            log("Failed to fetch place details",
+                                                name: "PlaceDetailsError");
+                                          }
+                                        });
+                                      },
                                     ),
-                                  ],
-                                ),
-                                onTap: () async {
-                                  await controller
-                                      .fetchPlaceDetailsById(controller
-                                          .listOfLocation[index]['place_id'])
-                                      .then((value) {
-                                    if (value.isSuccess && value.data != null) {
-                                      final details = {
-                                        'lat': value.data['lat'],
-                                        'lng': value.data['lng'],
-                                        'address': value.data['address'],
-                                      };
-                                      log(details.toString(), name: "Details");
-                                      if (context.mounted) {
-                                        Navigator.pop(context, details);
-                                      }
-                                    } else {
-                                      log("Failed to fetch place details",
-                                          name: "PlaceDetailsError");
-                                    }
-                                  });
+                                  );
                                 },
                               ),
-                            );
-                          },
-                        ),
-            ),
+                  ),
             bottomNavigationBar: Padding(
               padding: EdgeInsets.only(
                 bottom: isKeyboardVisible
