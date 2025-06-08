@@ -6,8 +6,6 @@ class RecentAddress {
   final String city;
   final String name;
   final String phone;
-
-  final String type;
   final String? stateName;
   final String? latitude;
   final String? longitude;
@@ -21,7 +19,6 @@ class RecentAddress {
     required this.city,
     required this.name,
     required this.phone,
-    required this.type,
     this.stateName,
     this.latitude,
     this.longitude,
@@ -38,7 +35,6 @@ class RecentAddress {
       city: json['city'],
       name: json['name'],
       phone: json['phone'],
-      type: json['type'],
       stateName: json['stateName'],
       latitude: json['latitude'],
       longitude: json['longitude'],
@@ -55,7 +51,6 @@ class RecentAddress {
       'city': city,
       'name': name,
       'phone': phone,
-      'type': type,
       'stateName': stateName,
       'latitude': latitude,
       'longitude': longitude,

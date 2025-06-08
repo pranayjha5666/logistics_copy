@@ -70,6 +70,7 @@ class LocationController extends GetxController implements GetxService {
     super.onClose();
   }
 
+  // local drop
   List<LocationFormControllers> localdropLocations = [];
   void addDropLocation() {
     if (localdropLocations.length < 4) {
@@ -90,6 +91,27 @@ class LocationController extends GetxController implements GetxService {
     update();
   }
 
+  //local pickup
+  List<LocationFormControllers> localPickupLocations = [];
+  void addPickupLocation() {
+    if (localPickupLocations.length < 4) {
+      localPickupLocations.add(LocationFormControllers(type: "pickup"));
+    }
+    update();
+  }
+
+  void removePickupLocation(int index) {
+    if (localPickupLocations.length > 1) {
+      localPickupLocations.removeAt(index);
+    }
+    update();
+  }
+
+  void updatePickupLocation(int index) {
+    localPickupLocations[index] = localPickupLocations[index];
+    update();
+  }
+
   //Map part
 
   GoogleMapController? mapController;
@@ -99,30 +121,6 @@ class LocationController extends GetxController implements GetxService {
 
   bool isServiceAvailable = true;
 
-  // void _showLocationDialog() {
-  //   showDialog(
-  //     context: navigatorKey.currentState!.context,
-  //     builder: (_) => AlertDialog(
-  //       title: Text("Location Required"),
-  //       content: Text("Please turn on location services and grant permission."),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () async {
-  //             Navigator.pop(navigatorKey.currentState!.context);
-  //             await Geolocator.openLocationSettings();
-  //           },
-  //           child: Text("Open Locatio"),
-  //         ),
-  //         TextButton(
-  //           onPressed: () {
-  //             Navigator.pop(navigatorKey.currentState!.context);
-  //           },
-  //           child: Text("Cancel"),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   bool comefromdailogue = false;
   void updatecomefromdailogue(bool val) {

@@ -228,22 +228,7 @@ class _ReviewTwoWheelerBookingsState extends State<ReviewTwoWheelerBooking> {
                             CustomButton(
                               onTap: () async {
                                 Map<String, dynamic> data = {
-                                  // "pickup_user_name":
-                                  //     Get.find<LocationController>()
-                                  //         .sendername
-                                  //         .text,
-                                  // "pickup_user_phone":
-                                  //     Get.find<LocationController>()
-                                  //         .sendermobileno
-                                  //         .text,
-                                  // "drop_user_name":
-                                  //     Get.find<LocationController>()
-                                  //         .receivername
-                                  //         .text,
-                                  // "drop_user_phone":
-                                  //     Get.find<LocationController>()
-                                  //         .receivermobileno
-                                  //         .text,
+
                                   "delivery_amount":
                                       Get.find<TwoWheelerController>()
                                           .deliveryamount,
@@ -338,10 +323,7 @@ class _ReviewTwoWheelerBookingsState extends State<ReviewTwoWheelerBooking> {
   void clearfield() {
     Get.find<LocationController>().pickupLocations.clear();
     Get.find<LocationController>().dropLocations.clear();
-    // Get.find<LocationController>().sendermobileno.clear();
-    // Get.find<LocationController>().receivername.clear();
-    // Get.find<LocationController>().sendername.clear();
-    // Get.find<LocationController>().receivermobileno.clear();
+
     Get.find<LocationController>()
         .pickupLocations
         .add(LocationFormControllers(type: "pickup"));

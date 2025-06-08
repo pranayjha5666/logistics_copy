@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logistics/services/route_helper.dart';
@@ -22,7 +21,6 @@ List<RecentAddress> recentaddress = [
     city: "Thane",
     name: "Ankita Deshmukh",
     phone: "9876543210",
-    type: "pickup",
     stateName: "Maharashtra",
     latitude: "19.2183",
     longitude: "72.9781",
@@ -36,7 +34,6 @@ List<RecentAddress> recentaddress = [
     city: "Thane",
     name: "Rohan Mehta",
     phone: "8888888888",
-    type: "drop",
     stateName: "Maharashtra",
     latitude: "19.2508",
     longitude: "72.9636",
@@ -50,7 +47,6 @@ List<RecentAddress> recentaddress = [
     city: "Thane",
     name: "Sneha Patil",
     phone: "7777777777",
-    type: "pickup",
     stateName: "Maharashtra",
     latitude: "19.2013",
     longitude: "72.9780",
@@ -64,7 +60,6 @@ List<RecentAddress> recentaddress = [
     city: "Thane",
     name: "Amit Kulkarni",
     phone: "6666666666",
-    type: "drop",
     stateName: "Maharashtra",
     latitude: "19.2090",
     longitude: "72.9614",
@@ -236,7 +231,6 @@ class _DropDetailsState extends State<DropDetails> {
                         } else {
                           _updateAddress(location, selectedAddress);
                         }
-
                       }
                     },
                     child: Padding(
@@ -288,18 +282,16 @@ class _DropDetailsState extends State<DropDetails> {
   }
 }
 
-
 Future<bool> showConfirmationDialog(BuildContext context) async {
   return await showDialog<bool>(
-    context: context,
-    builder: (context) {
-      return ChangeLocationDailogue();
-    },
-  ) ??
+        context: context,
+        builder: (context) {
+          return ChangeLocationDailogue();
+        },
+      ) ??
       false;
 }
 
-// Function to update the address in the location
 void _updateAddress(LocationFormControllers location, SavedAddress address) {
   location.mapaddress.text = address.mapAddress;
   location.addressLineOne.text = address.addressLineOne;

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logistics/controllers/two_wheeler_controller.dart';
@@ -97,11 +98,16 @@ class ConformationDailogue extends StatelessWidget {
                                 ),
                               );
                             }
+                            else{
+                              Fluttertoast.showToast(msg: value.message);
+
+                            }
                           },
                         );
                       } else {
                         Get.find<TwoWheelerController>()
                             .createtwowheelerpayment(data);
+
                       }
                     },
                   );

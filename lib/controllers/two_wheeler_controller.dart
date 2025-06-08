@@ -122,7 +122,7 @@ class TwoWheelerController extends GetxController implements GetxService {
       if (response.statusCode == 200) {
         _tempolist = tempoListModelFromJson(jsonEncode(response.body['data']));
         tempotypeid = _tempolist.first.id;
-        tempotypeweight=_tempolist.first.weight;
+        tempotypeweight = _tempolist.first.weight;
         responseModel =
             ResponseModel(true, '${response.body['msg']}', response.body);
 
@@ -141,10 +141,10 @@ class TwoWheelerController extends GetxController implements GetxService {
     return responseModel;
   }
 
-  void updatetempotypeidx(int idx, int? id,String? weight) {
+  void updatetempotypeidx(int idx, int? id, String? weight) {
     tempotypeidx = idx;
     tempotypeid = id;
-    tempotypeweight=weight;
+    tempotypeweight = weight;
     update();
   }
 
@@ -320,6 +320,8 @@ class TwoWheelerController extends GetxController implements GetxService {
         responseModel =
             ResponseModel(true, '${response.body['msg']}', response.body);
       } else {
+        Fluttertoast.showToast(msg: response.body['message']);
+
         responseModel = ResponseModel(false, response.body['message']);
       }
     } catch (e) {
@@ -399,7 +401,6 @@ class TwoWheelerController extends GetxController implements GetxService {
 
       if (response.statusCode == 200) {
         log(response.bodyString.toString(), name: "fetchtwowheelerpayment");
-
 
         final locationcontroller = Get.find<LocationController>();
 

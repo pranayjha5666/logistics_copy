@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
@@ -86,6 +87,7 @@ class CarAndBikeConfirmationDailog extends StatelessWidget {
                             );
                           } else {
                             Navigator.pop(context);
+                            Fluttertoast.showToast(msg: value.message);
                           }
                         },
                       );
