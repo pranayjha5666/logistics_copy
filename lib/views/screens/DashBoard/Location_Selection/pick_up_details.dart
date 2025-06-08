@@ -83,8 +83,6 @@ class PickUpDetailsPage extends StatefulWidget {
 
 class _PickUpDetailsPageState extends State<PickUpDetailsPage> {
   final formkey = GlobalKey<FormState>();
-  // String? selectedStateName;
-  // int? selectedStateId;
   final controller = Get.find<LocationController>();
 
   @override
@@ -338,7 +336,7 @@ class _PickUpDetailsPageState extends State<PickUpDetailsPage> {
                       );
                       if (selectedAddress != null &&
                           selectedAddress is SavedAddress) {
-                        final location = controller.localdropLocations.last;
+                        final location = controller.localPickupLocations.last;
                         if (location.mapaddress.text.isNotEmpty) {
                           bool res = await showConfirmationDialog(context);
                           if (res) {
@@ -347,6 +345,8 @@ class _PickUpDetailsPageState extends State<PickUpDetailsPage> {
                         } else {
                           _updateAddress(location, selectedAddress);
                         }
+                        controller.updatePickupLocation(controller.localPickupLocations.length - 1);
+
                       }
                     },
                     child: Padding(

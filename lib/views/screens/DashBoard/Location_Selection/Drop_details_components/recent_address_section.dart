@@ -4,7 +4,7 @@ import 'package:logistics/views/screens/DashBoard/Location_Selection/Pickup_deta
 import '../../../../../controllers/location_controller.dart';
 import '../Components/change_location_dailogue.dart';
 
-class RecentAddressSection extends StatefulWidget {
+class RecentAddressSection extends StatelessWidget {
   final List<RecentAddress> recentaddress;
   final List<LocationFormControllers> locallocation;
   final Function(int) onAddressSelected;
@@ -16,11 +16,6 @@ class RecentAddressSection extends StatefulWidget {
     required this.onAddressSelected,
   });
 
-  @override
-  State<RecentAddressSection> createState() => _RecentAddressSectionState();
-}
-
-class _RecentAddressSectionState extends State<RecentAddressSection> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -47,13 +42,13 @@ class _RecentAddressSectionState extends State<RecentAddressSection> {
             },
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            itemCount: widget.recentaddress.length,
+            itemCount: recentaddress.length,
             itemBuilder: (context, index) {
-              var address = widget.recentaddress[index];
+              var address = recentaddress[index];
               return InkWell(
                 onTap: () async {
-                  final location = widget.locallocation.last;
-                  log(widget.locallocation.length.toString());
+                  final location = locallocation.last;
+                  log(locallocation.length.toString());
                   if (location.mapaddress.text.isNotEmpty) {
                     bool res = await showConfirmationDialog(context);
                     if (res) {
@@ -62,7 +57,7 @@ class _RecentAddressSectionState extends State<RecentAddressSection> {
                   } else {
                     _updateAddress(location, address);
                   }
-                  widget.onAddressSelected(widget.locallocation.length - 1);
+                  onAddressSelected(locallocation.length - 1);
                 },
                 child: Container(
                   child: Row(

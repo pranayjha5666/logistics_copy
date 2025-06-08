@@ -8,7 +8,7 @@ import '../map_page.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-class DropAddress extends StatefulWidget {
+class DropAddress extends StatelessWidget {
   final int index;
   final LocationFormControllers location;
   final VoidCallback onRemove;
@@ -23,11 +23,6 @@ class DropAddress extends StatefulWidget {
   });
 
   @override
-  State<DropAddress> createState() => _DropAddressState();
-}
-
-class _DropAddressState extends State<DropAddress> {
-  @override
   Widget build(BuildContext context) {
     return GetBuilder<LocationController>(
       builder: (controller) {
@@ -35,15 +30,15 @@ class _DropAddressState extends State<DropAddress> {
           children: [
             Row(
               children: [
-                Text('Drop Location ${widget.index + 1}',
+                Text('Drop Location ${index + 1}',
                     style: Theme.of(context)
                         .textTheme
                         .labelMedium
                         ?.copyWith(fontWeight: FontWeight.w700)),
                 const Spacer(),
-                if (widget.canRemove)
+                if (canRemove)
                   GestureDetector(
-                    onTap: widget.onRemove,
+                    onTap: onRemove,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
@@ -82,30 +77,32 @@ class _DropAddressState extends State<DropAddress> {
                   MaterialPageRoute(builder: (_) => MapPage()),
                 );
                 if (result != null) {
-                  widget.location.mapaddress.text = result['address'];
-                  widget.location.latitude = result['lat'].toString();
-                  widget.location.longitude = result['lng'].toString();
-                  widget.location.stateName = result['state'].toString();
+                  location.mapaddress.text = result['address'];
+                  location.latitude = result['lat'].toString();
+                  location.longitude = result['lng'].toString();
+                  location.stateName = result['state'].toString();
 
                   final matchedState =
                       Get.find<AuthController>().stateList.firstWhereOrNull(
                             (state) =>
-                                state['name'] == widget.location.stateName,
+                                state['name'] == location.stateName,
                           );
 
                   if (matchedState != null) {
-                    widget.location.stateId = matchedState['id'];
+                    location.stateId = matchedState['id'];
                   }
 
-                  widget.location.city.text = result['city'].toString();
-                  widget.location.pincode.text = result['pincode'].toString();
-                  setState(() {});
+                  location.city.text = result['city'].toString();
+                  location.pincode.text = result['pincode'].toString();
+
+                  controller.updateDropLocation(index);
+
                 }
               },
               readOnly: true,
               validator: (value) =>
                   value!.isEmpty ? "Select Map Location" : null,
-              controller: widget.location.mapaddress,
+              controller: location.mapaddress,
               decoration: CustomDecoration.inputDecoration(
                 borderRadius: 8,
                 label: 'Select Map Location',
@@ -116,7 +113,7 @@ class _DropAddressState extends State<DropAddress> {
                 suffix: Icon(Icons.location_on_outlined),
               ),
             ),
-            if (widget.location.mapaddress.text.isNotEmpty) ...[
+            if (location.mapaddress.text.isNotEmpty) ...[
               const SizedBox(height: 15),
               Row(
                 children: [
@@ -125,7 +122,7 @@ class _DropAddressState extends State<DropAddress> {
                       style: Theme.of(context).textTheme.labelLarge,
                       validator: (value) =>
                           value!.isEmpty ? "Enter Receiver Name" : null,
-                      controller: widget.location.name,
+                      controller: location.name,
                       decoration: CustomDecoration.inputDecoration(
                         borderRadius: 8,
                         label: "Receiver Name",
@@ -144,7 +141,7 @@ class _DropAddressState extends State<DropAddress> {
                       validator: (value) => value!.isEmpty || value.length != 10
                           ? "Enter Receiver Mobile No"
                           : null,
-                      controller: widget.location.phone,
+                      controller: location.phone,
                       keyboardType: TextInputType.number,
                       decoration: CustomDecoration.inputDecoration(
                         borderRadius: 8,
@@ -172,7 +169,7 @@ class _DropAddressState extends State<DropAddress> {
                 minLines: 1,
                 validator: (value) =>
                     value!.isEmpty ? "Enter Address Line 1" : null,
-                controller: widget.location.addressLineOne,
+                controller: location.addressLineOne,
                 decoration: CustomDecoration.inputDecoration(
                   borderRadius: 8,
                   label: 'Address Line 1',
@@ -190,7 +187,7 @@ class _DropAddressState extends State<DropAddress> {
                     ?.copyWith(overflow: TextOverflow.ellipsis),
                 maxLines: null,
                 minLines: 1,
-                controller: widget.location.addressLineTwo,
+                controller: location.addressLineTwo,
                 decoration: CustomDecoration.inputDecoration(
                   borderRadius: 8,
                   label: 'Address Line 2 (Optional)',
@@ -204,8 +201,8 @@ class _DropAddressState extends State<DropAddress> {
               // State selector and other fields
               FormField(
                 validator: (value) {
-                  if (widget.location.stateName == null ||
-                      widget.location.stateName!.isEmpty) {
+                  if (location.stateName == null ||
+                      location.stateName!.isEmpty) {
                     return 'Select State';
                   }
                   return null;
@@ -224,9 +221,9 @@ class _DropAddressState extends State<DropAddress> {
                             builder: (_) => SelectStateDialogue(
                               allStates: allStates,
                               onStateSelected: (selectedState) {
-                                widget.location.stateName =
+                                location.stateName =
                                     selectedState['name'];
-                                widget.location.stateId = selectedState['id'];
+                                location.stateId = selectedState['id'];
                                 field.didChange(selectedState['name']);
                               },
                             ),
@@ -245,13 +242,13 @@ class _DropAddressState extends State<DropAddress> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(widget.location.stateName ?? "Select State",
+                              Text(location.stateName ?? "Select State",
                                   style: Theme.of(context)
                                       .textTheme
                                       .labelLarge
                                       ?.copyWith(
                                           color:
-                                              widget.location.stateName != null
+                                              location.stateName != null
                                                   ? Colors.black
                                                   : Colors.grey[500])),
                               const Icon(Icons.arrow_drop_down),
@@ -282,7 +279,7 @@ class _DropAddressState extends State<DropAddress> {
                       style: Theme.of(context).textTheme.labelLarge,
                       validator: (value) =>
                           value!.isEmpty ? "Enter City Name" : null,
-                      controller: widget.location.city,
+                      controller: location.city,
                       decoration: CustomDecoration.inputDecoration(
                           borderRadius: 8,
                           label: "City Name",
@@ -299,7 +296,7 @@ class _DropAddressState extends State<DropAddress> {
                       style: Theme.of(context).textTheme.labelLarge,
                       validator: (value) =>
                           value!.isEmpty ? "Enter Pincode" : null,
-                      controller: widget.location.pincode,
+                      controller: location.pincode,
                       keyboardType: TextInputType.number,
                       decoration: CustomDecoration.inputDecoration(
                           borderRadius: 8,

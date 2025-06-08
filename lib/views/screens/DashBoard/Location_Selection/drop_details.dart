@@ -231,6 +231,7 @@ class _DropDetailsState extends State<DropDetails> {
                         } else {
                           _updateAddress(location, selectedAddress);
                         }
+                        controller.updateDropLocation(controller.localdropLocations.length - 1);
                       }
                     },
                     child: Padding(

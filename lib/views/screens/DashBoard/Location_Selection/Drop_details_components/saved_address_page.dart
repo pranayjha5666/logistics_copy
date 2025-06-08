@@ -2,14 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../Pickup_details_components/saved_address_model_and_list.dart';
 
-class SavedAddressPage extends StatefulWidget {
+class SavedAddressPage extends StatelessWidget {
   const SavedAddressPage({super.key});
 
-  @override
-  State<SavedAddressPage> createState() => _SavedAddressPageState();
-}
-
-class _SavedAddressPageState extends State<SavedAddressPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,7 +76,8 @@ class _SavedAddressPageState extends State<SavedAddressPage> {
                                 Expanded(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         address.addresstype,
